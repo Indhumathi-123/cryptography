@@ -1,0 +1,52 @@
+import math
+
+def get_gcd(a, b):
+    """Euclidean Algorithm to find GCD."""
+    while b:
+        a, b = b, a % b
+    return abs(a)
+
+def get_primitive_root(p):
+    """Finds the smallest primitive root modulo a prime p."""
+    if p == 2: return 1
+    phi = p - 1
+    n = phi
+    factors = set()
+    d = 2
+    while d * d <= n:
+        if n % d == 0:
+            factors.add(d)
+            while n % d == 0:
+                n //= d
+        d += 1
+    if n > 1:
+        factors.add(n)
+
+    for g in range(2, p):
+        is_primitive = True
+        for f in factors:
+            if pow(g, phi // f, p) == 1:
+                is_primitive = False
+                break
+        if is_primitive:
+            return g
+    return None
+
+# --- User Input Section ---
+try:
+    print("--- Euclidean Algorithm ---")
+    n1 = int(input("Enter first number for GCD: "))
+    n2 = int(input("Enter second number for GCD: "))
+    print(f"GCD of {n1} and {n2} is: {get_gcd(n1, n2)}\n")
+
+    print("--- Primitive Root Finder ---")
+    prime = int(input("Enter a prime number: "))
+    root = get_primitive_root(prime)
+    if root:
+        print(f"The smallest primitive root of {prime} is: {root}")
+    else:
+        print(f"No primitive root found for {prime} (ensure it is prime).")
+
+except ValueError:
+    print("Invalid input! Please enter integers only.")
+
