@@ -1,0 +1,86 @@
+from Crypto.Hash import CMAC
+from Crypto.Cipher import AES
+
+def get_key_from_user():
+    print("\n--- AES Key Setup ---")
+    print("1. Enter key as HEX")
+    print("2. Enter key as plain TEXT")
+    choice = input("Choose option (1/2): ").strip()
+
+    if choice == "1":
+        hex_key = input("Enter AES key in HEX (32/48/64 hex chars): ").strip()
+        key = bytes.fromhex(hex_key)
+    else:
+        text_key = input("Enter AES key as text (16/24/32 chars): ").strip()
+        key = text_key.encode('utf-8')
+
+    if len(key) not in [16, 24, 32]:
+        raise ValueError(f"Invalid key length: {len(key)} bytes. Must be 16, 24, or 32.")
+    return key
+
+def get_message_from_user():
+    print("\n--- Message Input ---")
+    print("1. Enter message as plain TEXT")
+    print("2. Enter message as HEX")
+    choice = input("Choose option (1/2): ").strip()
+
+    if choice == "1":
+        msg = input("Enter your message: ").strip()
+        return msg.encode('utf-8')
+    else:
+        hex_msg = input("Enter message in HEX: ").strip()
+        return bytes.fromhex(hex_msg)
+
+def generate_cmac(key: bytes, message: bytes) -> str:
+    cobj = CMAC.new(key, ciphermod=AES)
+    cobj.update(message)
+    return cobj.hexdigest()
+
+def verify_cmac(key: bytes, message: bytes, mac: str) -> bool:
+    try:
+        cobj = CMAC.new(key, ciphermod=AES)
+        cobj.update(message)
+        cobj.hexverify(mac)
+        return True
+    except ValueError:
+        return False
+
+def main():
+    print("=" * 50)
+    print("       AES-CMAC GENERATOR & VERIFIER")
+    print("=" * 50)
+
+    print("\nWhat do you want to do?")
+    print("1. Generate CMAC")
+    print("2. Verify CMAC")
+    action = input("Choose (1/2): ").strip()
+
+    key     = get_key_from_user()
+    message = get_message_from_user()
+
+    key_bits = len(key) * 8
+
+    if action == "1":
+        mac = generate_cmac(key, message)
+        print("\n" + "=" * 50)
+        print(f"  Key       : {key.hex()}")
+        print(f"  Key Size  : AES-{key_bits}")
+        print(f"  Message   : {message.decode(errors='replace')}")
+        print(f"  CMAC Tag  : {mac.upper()}")
+        print("=" * 50)
+
+    elif action == "2":
+        mac_to_verify = input("\nEnter the CMAC tag to verify (hex): ").strip()
+        result = verify_cmac(key, message, mac_to_verify)
+        print("\n" + "=" * 50)
+        if result:
+            print("  ✅ VALID   — Message authenticated successfully!")
+        else:
+            print("  ❌ INVALID — MAC mismatch. Message may be tampered!")
+        print("=" * 50)
+
+    else:
+        print("Invalid choice.")
+
+if __name__ == "__main__":
+    main()
