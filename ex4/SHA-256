@@ -1,0 +1,79 @@
+import hashlib
+
+def sha256_hash(message: str) -> str:
+    """Hash a plain text message using SHA-256."""
+    return hashlib.sha256(message.encode('utf-8')).hexdigest()
+
+def sha256_bytes(data: bytes) -> str:
+    """Hash raw bytes using SHA-256."""
+    return hashlib.sha256(data).hexdigest()
+
+def sha256_file(filepath: str) -> str:
+    """Hash a file using SHA-256 (chunk by chunk for large files)."""
+    h = hashlib.sha256()
+    with open(filepath, 'rb') as f:
+        while chunk := f.read(8192):
+            h.update(chunk)
+    return h.hexdigest()
+
+# ── Main with User Input ─────────────────────────────────────────
+
+def main():
+    print("=" * 55)
+    print("          SHA-256 HASH GENERATOR & VERIFIER")
+    print("=" * 55)
+
+    print("\nChoose operation:")
+    print("1. Hash a message")
+    print("2. Hash hex bytes")
+    print("3. Hash a file")
+    print("4. Verify a hash")
+    choice = input("Enter choice (1/2/3/4): ").strip()
+
+    if choice == "1":
+        msg = input("\nEnter your message: ").strip()
+        result = sha256_hash(msg)
+        print("\n" + "=" * 55)
+        print(f"  Message    : {msg}")
+        print(f"  SHA-256    : {result.upper()}")
+        print(f"  Length     : {len(result) * 4} bits / {len(result) // 2} bytes")
+        print("=" * 55)
+
+    elif choice == "2":
+        hex_input = input("\nEnter hex bytes: ").strip()
+        data = bytes.fromhex(hex_input)
+        result = sha256_bytes(data)
+        print("\n" + "=" * 55)
+        print(f"  Hex Input  : {hex_input.upper()}")
+        print(f"  SHA-256    : {result.upper()}")
+        print("=" * 55)
+
+    elif choice == "3":
+        path = input("\nEnter file path: ").strip()
+        try:
+            result = sha256_file(path)
+            print("\n" + "=" * 55)
+            print(f"  File       : {path}")
+            print(f"  SHA-256    : {result.upper()}")
+            print("=" * 55)
+        except FileNotFoundError:
+            print(f"   File not found: {path}")
+
+    elif choice == "4":
+        msg        = input("\nEnter original message: ").strip()
+        given_hash = input("Enter hash to verify   : ").strip().lower()
+        computed   = sha256_hash(msg)
+        print("\n" + "=" * 55)
+        if computed == given_hash:
+            print("   VALID   — Hash matches! Message is authentic.")
+        else:
+            print("  INVALID — Hash mismatch! Message may be altered.")
+            print(f"  Expected   : {computed.upper()}")
+            print(f"  Got        : {given_hash.upper()}")
+        print("=" * 55)
+
+    else:
+        print("Invalid choice.")
+
+if __name__ == "__main__":
+    main()
