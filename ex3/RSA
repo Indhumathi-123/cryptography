@@ -1,0 +1,22 @@
+from Crypto.PublicKey import RSA
+from Crypto.Cipher import PKCS1_OAEP
+
+# STEP 1: Generate Key Pair
+# 2048-bit keys are the current security standard
+key = RSA.generate(2048)
+private_key = key.export_key()
+public_key = key.publickey().export_key()
+print(f"Step 1: Keys Generated.")
+
+# STEP 2: Encrypting with Public Key
+message = "Secret RSA message".encode('utf-8')
+recipient_public_key = RSA.import_key(public_key)
+cipher_rsa = PKCS1_OAEP.new(recipient_public_key)
+ciphertext = cipher_rsa.encrypt(message)
+print(f"Step 2: Message Encrypted -> {ciphertext.hex()[:50]}...")
+
+# STEP 3: Decrypting with Private Key
+recipient_private_key = RSA.import_key(private_key)
+cipher_rsa = PKCS1_OAEP.new(recipient_private_key)
+decrypted_message = cipher_rsa.decrypt(ciphertext)
+print(f"Step 3: Decrypted Message -> {decrypted_message.decode('utf-8')}")
