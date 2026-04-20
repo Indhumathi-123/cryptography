@@ -1,0 +1,22 @@
+ import AES
+from Crypto.Random import get_random_bytes
+
+# STEP 1: Setup Data and Key
+# AES keys must be 16, 24, or 32 bytes long.
+data = "Secret AES Message".encode('utf-8')
+key = get_random_bytes(16) 
+print(f"Step 1: Key generated -> {key.hex()}")
+
+# STEP 2: Encryption
+# Create cipher, encrypt data, and generate a 'nonce' (unique number)
+cipher_enc = AES.new(key, AES.MODE_EAX)
+nonce = cipher_enc.nonce
+ciphertext, tag = cipher_enc.encrypt_and_digest(data)
+print(f"Step 2: Encrypted Ciphertext -> {ciphertext.hex()}")
+
+# STEP 3: Decryption
+# You MUST use the same key and the same nonce to decrypt.
+cipher_dec = AES.new(key, AES.MODE_EAX, nonce=nonce)
+decrypted_data = cipher_dec.decrypt_and_verify(ciphertext, tag)
+
+print(f"Step 3: Decrypted Result -> {decrypted_data.decode('utf-8')}")
