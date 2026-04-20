@@ -1,0 +1,23 @@
+ import DES
+from Crypto.Util.Padding import pad, unpad
+
+# STEP 1: Setup Data and Key
+# DES keys MUST be exactly 8 bytes long.
+data_des = "DES Data".encode('utf-8')
+key_des = b'8bytekey' # Exactly 8 bytes
+print(f"Step 1: DES Key -> {key_des}")
+
+# STEP 2: Padding & Encryption
+# DES works on 8-byte blocks. Data must be 'padded' to fit.
+cipher_des_enc = DES.new(key_des, DES.MODE_CBC)
+iv = cipher_des_enc.iv # Initialization Vector
+padded_data = pad(data_des, DES.block_size)
+ciphertext_des = cipher_des_enc.encrypt(padded_data)
+print(f"Step 2: DES Ciphertext -> {ciphertext_des.hex()}")
+
+# STEP 3: Decryption & Unpadding
+cipher_des_dec = DES.new(key_des, DES.MODE_CBC, iv=iv)
+raw_decrypted = cipher_des_dec.decrypt(ciphertext_des)
+final_des_data = unpad(raw_decrypted, DES.block_size)
+
+print(f"Step 3: DES Decrypted -> {final_des_data.decode('utf-8')}")
