@@ -1,0 +1,29 @@
+from Crypto.Util import number
+
+# STEP 1: Public Parameters
+# Both parties agree on a prime (p) and a generator (g)
+p = number.getPrime(512)
+g = 2
+print(f"Step 1: Shared Prime (p) -> {p}")
+
+# STEP 2: Private Key Generation
+# Alice and Bob choose secret numbers
+alice_private = number.getRandomRange(2, p-1)
+bob_private = number.getRandomRange(2, p-1)
+print(f"Step 2: Private keys chosen locally.")
+
+# STEP 3: Public Key Exchange
+# Each party calculates their public key: (g^private) mod p
+alice_public = pow(g, alice_private, p)
+bob_public = pow(g, bob_private, p)
+print(f"Step 3: Public keys exchanged.")
+
+# STEP 4: Shared Secret Calculation
+# Alice: (BobPublic^AlicePrivate) mod p
+# Bob:   (AlicePublic^BobPrivate) mod p
+alice_shared = pow(bob_public, alice_private, p)
+bob_shared = pow(alice_public, bob_private, p)
+
+print(f"Step 4: Alice's Secret -> {alice_shared}")
+print(f"Step 4: Bob's Secret   -> {bob_shared}")
+print(f"Match: {alice_shared == bob_shared}")
