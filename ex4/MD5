@@ -1,0 +1,38 @@
+import hashlib
+
+def generate_md5_with_steps(input_string):
+    print(f"--- MD5 Hashing Process for: '{input_string}' ---")
+    
+    # STEP 1: Original Input
+    print(f"Step 1: Original string -> {input_string}")
+    
+    # STEP 2: Encoding
+    # The hashlib module requires data in bytes, not strings.
+    byte_data = input_string.encode('utf-8')
+    print(f"Step 2: Encoded to bytes -> {byte_data}")
+    
+    # STEP 3: Initialize MD5 Object
+    # Create an md5 hash object from the hashlib library.
+    md5_obj = hashlib.md5()
+    print(f"Step 3: Initialized MD5 hash object: {md5_obj.name}")
+    
+    # STEP 4: Update Object with Data
+    # Pass the byte data into the hash algorithm.
+    md5_obj.update(byte_data)
+    print(f"Step 4: Updated hash object with byte data.")
+    
+    # STEP 5: Raw Digest (Binary)
+    # The raw 128-bit hash is often unreadable in binary.
+    raw_digest = md5_obj.digest()
+    print(f"Step 5: Raw binary digest -> {raw_digest}")
+    
+    # STEP 6: Final Hexadecimal Hash
+    # Convert the binary digest into a human-readable hex string.
+    final_hex = md5_obj.hexdigest()
+    print(f"Step 6: Final MD5 Hex Digest -> {final_hex}")
+    
+    return final_hex
+
+# Run the function
+result = generate_md5_with_steps("PythonCode")
+print("\nSuccess! Final MD5 Hash generated.")
